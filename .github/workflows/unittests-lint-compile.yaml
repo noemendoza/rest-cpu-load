@@ -1,0 +1,25 @@
+name: unit-tests, lint and compile
+on: [push]
+
+jobs:
+  test-lint-build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install make
+      run: sudo apt-get install build-essential
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+
+    - uses: actions/checkout@v2
+
+    - name: Test
+      run: make test
+
+    - name: Lint
+      run: make lint
+
+    - name: build
+      run: make build
