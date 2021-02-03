@@ -2,8 +2,8 @@
 Description=rest-cpu-load
 After=syslog.target network.target
 [Service]
-ExecStart=/home/ec2-user/go/src/github.com/boletia/rest-cpu-load/build/neerme-chat-v2
-WorkingDirectory=/home/ec2-user/go/src/github.com/boletia/rest-cpu-load
+ExecStart=/home/ec2-user/go/src/github/boletia/rest-cpu-load/build/rest-cpu-load
+WorkingDirectory=/home/ec2-user/go/src/github/boletia/rest-cpu-load
 LimitNOFILE=30000
 LimitNPROC=20000
 KillMode=process
