@@ -18,7 +18,7 @@ type stress struct {
 }
 
 // New retursns new
-func New(ctx context.Context) stress {
+func New(ctx context.Context) stress { // nolint: golint
 	return stress{
 		ctx: ctx,
 	}
