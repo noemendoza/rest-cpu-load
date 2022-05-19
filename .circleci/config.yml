@@ -116,5 +116,7 @@ jobs:
       - run:
           name: Prepare K8S login
           command: |
+            aws configure set aws_access_key_id AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key AWS_SECRET_ACCESS_KEY
             aws eks --region $AWS_REGION update-kubeconfig --name boletia
             kubectl get pods --all-namespace
