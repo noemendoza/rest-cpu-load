@@ -116,7 +116,7 @@ jobs:
       - run:
           name: Prepare K8S login
           command: |
-            export KUBECONFIG=$HOME/.kube/kubeconfig && /home/circleci/bin/aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
             kubectl get pods --all-namespace
 
 
