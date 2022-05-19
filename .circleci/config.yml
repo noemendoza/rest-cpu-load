@@ -1,6 +1,23 @@
 version: 2.1
+
+
+build_on_master: &build_on_master
+  filters:
+    tags:
+      only: /^v.*/
+    branches:
+      only: master
+
+
+workflows:
+  version: 2
+  circleci-github:
+    jobs:
+      - test_go:
+          <<: *build_master
+
 jobs:
-  testing:
+  test_go:
     working_directory: ~/repo
     docker:
       - image: cimg/go:1.16.5
