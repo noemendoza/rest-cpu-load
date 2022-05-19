@@ -1,0 +1,27 @@
+version: 2.1
+jobs:
+  unit-testing:
+    docker:
+      - image: cimg/base:stable
+    environment: # environment variables for the build itself
+      TEST_RESULTS: /tmp/test-results # path to where test results will be saved
+
+    steps: # steps that comprise the `build` job
+      - checkout # check out source code to working directory
+      - run: mkdir -p $TEST_RESULTS # create the test results directory
+
+      - restore_cache: # restores saved cache if no changes are detected since last run
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+      - run:
+          name: Run unit tests
+
+          # store the results of our tests in the $TEST_RESULTS directory
+          command: |
+            make lint
+
+
+workflows:
+  testing-flow:
+    jobs:
+      - unit-testing
