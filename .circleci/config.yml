@@ -71,9 +71,9 @@ jobs:
           name: Build Docker image TAG
           command: |
             TAG="0.1.<< pipeline.number >>"
-            docker build -t $AWS_ECR_ACCOUNT_URL/eeeffllsiss:$TAG .
+            docker build -t $AWS_ECR_ACCOUNT_URL/boletia-ecr:$TAG .
       - run:
           name: Push Docker image
           command: |
             TAG="0.1.<< pipeline.number >>"
-            docker push $AWS_ECR_ACCOUNT_URL/eeeffllsiss:$TAG
+            docker push $AWS_ECR_ACCOUNT_URL/boletia-ecr:$TAG
