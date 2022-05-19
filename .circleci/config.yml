@@ -14,7 +14,7 @@ workflows:
   circleci-github:
     jobs:
       - test_go:
-          <<: *build_master
+          <<: *build_on_master
 
 jobs:
   test_go:
