@@ -30,7 +30,10 @@ workflows:
 
           requires:
             - unit_testing_go
-
+      - preprare_chart_to_deploy:
+          <<: *build_on_master
+          requires:
+            - aws-ecr/build-and-push-image
 jobs:
   unit_testing_go:
     working_directory: ~/repo
@@ -51,3 +54,46 @@ jobs:
       - run:
           name: Run test
           command: make test
+  preprare_chart_to_deploy:
+    docker:
+      - image: circleci/node:10.24.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Install YQ
+          command: |
+            sudo wget https://github.com/mikefarah/yq/releases/download/v4.20.1/yq_linux_amd64 -O /usr/bin/yq
+            sudo chmod +x /usr/bin/yq
+             yq --version
+      - run:
+          name: Update YML Chart.yml 
+          command: |
+            ls
+            TAG=0.1.<< pipeline.number >>
+            TAGHELM="0.1.<< pipeline.number >>"
+            sed -i 's|^version:.*|version: '"$TAGHELM"'|g' charts/api-ci-dev/Chart.yaml
+          
+            yq -i '.description = "rest-cpu-load-'$TAG'"' charts/api-ci-dev/Chart.yaml
+            yq -i '.appVersion = "'$TAG'"' charts/rest-cpu-load/Chart.yaml  
+            yq -i '.name = "rest-cpu-load"' charts/rest-cpu-load/Chart.yaml
+      - run:
+          name: Update YML values.yml Dev
+          command: |
+            TAG="0.1.<< pipeline.number >>"
+            yq -i '.image.tag = "'$TAG'"' charts/rest-cpu-load/values.yaml
+            yq -i '.nameOverride = "rest-cpu-load"' charts/rest-cpu-load/values.yaml
+            yq -i '.fullnameOverride = "rest-cpu-load"' charts/rest-cpu-load/values.yaml
+   
+      - run:
+          name: Install Helm
+          command: |
+            curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+            chmod 700 get_helm.sh
+            ./get_helm.sh
+            helm version
+      - run:
+          name: Test Chart lint
+          command: |
+             cat charts/rest-cpu-load/Chart.yaml
+             helm lint charts/rest-cpu-load/
