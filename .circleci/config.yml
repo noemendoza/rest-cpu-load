@@ -13,7 +13,7 @@ orbs:
 
 workflows:
   version: 2
-  circleci-github:
+  rest-cpu-load:
     jobs:
       - unit_testing_go:
           <<: *build_on_master
@@ -117,7 +117,7 @@ jobs:
           name: Prepare K8S login
           command: |
             aws sts get-caller-identity
-            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+            aws eks --region us-west-1 update-kubeconfig --name boletia
             kubectl get pods --all-namespace
 
 
