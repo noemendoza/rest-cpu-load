@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build:
+  testing:
     working_directory: ~/repo
     docker:
       - image: cimg/go:1.16.5
@@ -17,5 +17,5 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
-          name: Run lint
-          command: make lint
+          name: Run test
+          command: make test
