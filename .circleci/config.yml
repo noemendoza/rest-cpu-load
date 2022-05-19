@@ -13,7 +13,7 @@ orbs:
 
 workflows:
   version: 2
-  rest-cpu-load:
+  rest-cpu-load-flow:
     jobs:
       - unit_testing_go:
           <<: *build_on_master
@@ -116,8 +116,12 @@ jobs:
       - run:
           name: Prepare K8S login
           command: |
-            aws sts get-caller-identity
+            
             aws eks --region us-west-1 update-kubeconfig --name boletia
-            kubectl get pods --all-namespace
+            kubectl get pods --all-namespaces
 
 
+      - run:
+          name: Deploying Kubernetes
+          command: |
+            helm install rest-cpu-load rest-cpu-load/ 
