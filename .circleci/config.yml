@@ -30,7 +30,7 @@ workflows:
 
           requires:
             - unit_testing_go
-      - preprare_chart_to_deploy:
+      - preprare_chart_and_deploy:
           <<: *build_on_master
           requires:
             - aws-ecr/build-and-push-image
@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Run test
           command: make test
-  preprare_chart_to_deploy:
+  preprare_chart_and_deploy:
     docker:
       - image: circleci/node:10.24.1
     working_directory: ~/repo
@@ -97,3 +97,28 @@ jobs:
           command: |
              cat charts/rest-cpu-load/Chart.yaml
              helm lint charts/rest-cpu-load/
+      - run:
+          name: Install awscli and gettext-base
+          command: |
+            sudo pip3 install awscli
+      - run:
+          name: Install aws-iam-authenticator
+          command: |
+            curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+            chmod +x ./aws-iam-authenticator
+            sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+      - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Prepare K8S login
+          command: |
+            aws eks --region $AWS_REGION update-kubeconfig --name boletia
+            rm -rf .k8s/.generated && mkdir -p .k8s/.generated
+            for f in .k8s/templates/staging.yml
+              do
+              envsubst < $f > ".k8s/.generated/$(basename $f)"
+            done
