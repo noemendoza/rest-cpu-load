@@ -72,9 +72,9 @@ jobs:
             ls
             TAG=0.1.<< pipeline.number >>
             TAGHELM="0.1.<< pipeline.number >>"
-            sed -i 's|^version:.*|version: '"$TAGHELM"'|g' charts/api-ci-dev/Chart.yaml
+            sed -i 's|^version:.*|version: '"$TAGHELM"'|g' charts/rest-cpu-load/Chart.yaml
           
-            yq -i '.description = "rest-cpu-load-'$TAG'"' charts/api-ci-dev/Chart.yaml
+            yq -i '.description = "rest-cpu-load-'$TAG'"' charts/rest-cpu-load/Chart.yaml
             yq -i '.appVersion = "'$TAG'"' charts/rest-cpu-load/Chart.yaml  
             yq -i '.name = "rest-cpu-load"' charts/rest-cpu-load/Chart.yaml
       - run:
