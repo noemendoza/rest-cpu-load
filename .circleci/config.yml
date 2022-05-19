@@ -19,6 +19,15 @@ workflows:
           <<: *build_on_master
       - aws-ecr/build-and-push-image:
           <<: *build_on_master
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id:  AWS_ACCESS_KEY_ID
+          aws-secret-access-key:  AWS_SECRET_ACCESS_KEY
+          region: AWS_REGION
+          dockerfile: Dockerfile
+          path: ./
+          repo: eeeffllsiss
+          tag: latest
+
           requires:
             - unit_testing_go
 
@@ -43,11 +52,28 @@ jobs:
           name: Run test
           command: make test
   aws-ecr/build-and-push-image:
-          account-url: ${AWS_ECR_ACCOUNT_URL}
-          aws-access-key-id:  ${AWS_ACCESS_KEY_ID}
-          aws-secret-access-key:  ${AWS_SECRET_ACCESS_KEY}
-          region: "us-east-1"
-          dockerfile: Dockerfile
-          path: ./
-          repo: eeeffllsiss
-          tag: latest
+    working_directory: ~/repo
+    executor:
+      name: docker/docker
+      tag: '3.6'
+    steps:
+
+      - checkout
+      #- docker/install-docker-compose
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: ECR - Docker Login
+          command: |
+            aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/f0z2q6f8
+            echo "${PASS_PRIVATE_REGISTRY}" | docker login ${URL_PRIVATE_REGISTRY}  --username ${USER_PRIVATE_REGISTRY} --password-stdin 
+      - run:
+          name: Build Docker image TAG
+          command: |
+            TAG="0.1.<< pipeline.number >>"
+            docker build -t $AWS_ECR_ACCOUNT_URL/eeeffllsiss:$TAG .
+      - run:
+          name: Push Docker image
+          command: |
+            TAG="0.1.<< pipeline.number >>"
+            docker push $AWS_ECR_ACCOUNT_URL/eeeffllsiss:$TAG
