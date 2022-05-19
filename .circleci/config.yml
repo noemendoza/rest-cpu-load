@@ -17,7 +17,7 @@ workflows:
     jobs:
       - unit_testing_go:
           <<: *build_on_master
-      - 02-build_and_push_images_ECR:
+      - aws-ecr/build-and-push-image:
           <<: *build_on_master
           account-url: ${AWS_ECR_ACCOUNT_URL}
           aws-access-key-id:  ${AWS_ACCESS_KEY_ID}
